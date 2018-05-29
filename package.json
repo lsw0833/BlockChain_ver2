@@ -1,0 +1,24 @@
+{
+  "name": "p2p2p2p",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "bs58": "^4.0.1",
+    "childprocess": "^2.0.2",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.3",
+    "express-error-handler": "^1.1.0",
+    "python-shell": "^0.5.0",
+    "socket.io": "^2.1.0",
+    "socket.io-client": "^2.1.0",
+    "socket.io-p2p": "^2.2.0",
+    "socket.io-p2p-server": "^1.2.0"
+  }
+}
