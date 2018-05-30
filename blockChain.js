@@ -188,6 +188,9 @@ function mining(previous) {
     datainMining.push(data[i].TXID);
     TXinMining.push(data[i]);
   }
+  if(datainMining.length == 0){
+    datainMining.push("no Data");
+  }
   var options = {
     env: {
       "version": version,
