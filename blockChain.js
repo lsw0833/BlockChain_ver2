@@ -4,6 +4,7 @@ var crypto = require('crypto');
 var bs58 = require('bs58');
 var expressErrorHandler = require('express-error-handler');
 var exec = require('child_process').exec;
+var cors = require('cors');
 var bits = 440711666;
 var version = 1;
 var zero = 4;
@@ -15,6 +16,7 @@ var blockChain = [];
 var recieveTXID = [];
 var syncLastBlockHash = [];
 var app = express();
+app.use(cors());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
