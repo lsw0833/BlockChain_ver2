@@ -215,7 +215,7 @@ function mining(previous) {
   isMining = true;
   let datainMining = [];
   let TXinMining = [];
-  let TXinMinig2 = [];
+  let TXinMining2 = [];
   for (var i in data) {
     datainMining.push(data[i].TXID);
     TXinMining.push(data[i]);
