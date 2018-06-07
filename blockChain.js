@@ -91,6 +91,16 @@ function deleteinData(list) {
     }
   }
 }
+function deleteinCoin(list) {
+  for (var i = 0; i < list.length; i++) {
+    for (var j = 0; j < coin.length; j++) {
+      if (coin[j]["TXID"] == list[i]["TXID"]) {
+        coin.splice(j, 1);
+        j--;
+      }
+    }
+  }
+}
 
 function isinBlock(data1) {
   for (var i = 0; i < blockChain.length; i++) {
@@ -128,6 +138,8 @@ function addNode(ip) {
               if (data1["previousBlockHash"] == blockChain[blockChain.length - 1]["blockHash"]) {
                 let temp = data1["data"];
                 deleteinData(temp);
+                let temp2 = data1["coin"];
+                deleteinCoin(temp2);
                 blockChain.push(data1);
                 io.emit("findBlock", data1);
                 console.log("get block from other Node");
