@@ -47,27 +47,27 @@ app.post('/dataShop',(req,res)=>{
 });
 app.post('/wallet',(req,res)=>{
   let txid = req.body.TXID;
-  let form = req.body.FORM;
   let to = req.body.TO;
   let coins = req.body.COINS;
   let sig = req.body.SIG;
-  let PUB = req.body.PUB;
+  let pub = req.body.PUB;
+  let previd =req.body.PREVID;
 //  var temp = crypto.publicDecrypt(publicKey, Buffer.from(txSignature));
   // 인증 후
   //if(temp == txid){
     var newData = {
       TXID: txid,
-      FORM: form,
       TO : to,
       COINS : coins,
       SIG : sig,
-      PUB :pub
+      PUB :pub,
+      PREVID : previd
     };
     console.log("***************************");
     console.log("Data : " + newData + "for wallet");
     console.log("***************************");
     coin.push(newData);
-    console.log(data);
+    console.log(coin);
     recieveTXID.push(newData["TXID"]);
     io.emit("addCoin", newData);
     res.send();
