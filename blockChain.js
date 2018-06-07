@@ -9,7 +9,8 @@ var bits = 440711666;
 var version = 1;
 var zero = 4;
 var node = [];
-var data = ["Genesis"];
+var data = [];
+var coin = [];
 var nodeName = "julia";
 var isMining = false;
 var blockChain = [];
@@ -45,27 +46,32 @@ app.post('/dataShop',(req,res)=>{
   res.send();
 });
 app.post('/wallet',(req,res)=>{
-  let txID = req.body.TXID;
-  let txRealData = req.body.TXRealData;
-  let txSignature = req.body.txSignature;
-  let publicKey = req.body.publicKey;
-
-  var temp = crypto.publicDecrypt(publicKey, Buffer.from(txSignature));
-
-  if(temp == txID){
+  let txid = req.body.TXID;
+  let form = req.body.FORM;
+  let to = req.body.TO;
+  let coins = req.body.COINS;
+  let sig = req.body.SIG;
+  let PUB = req.body.PUB;
+//  var temp = crypto.publicDecrypt(publicKey, Buffer.from(txSignature));
+  // 인증 후
+  //if(temp == txid){
     var newData = {
-      TXID: txID,
-      TXData: txRealData
+      TXID: txid,
+      FORM: form,
+      TO : to,
+      COINS : coins,
+      SIG : sig,
+      PUB :pub
     };
     console.log("***************************");
     console.log("Data : " + newData + "for wallet");
     console.log("***************************");
-    data.push(newData);
+    coin.push(newData);
     console.log(data);
     recieveTXID.push(newData["TXID"]);
-    io.emit("addData", newData);
+    io.emit("addCoin", newData);
     res.send();
-  }
+//  }
 
 });
 app.get('/blockChain',(req,res)=>{
@@ -155,6 +161,17 @@ function addNode(ip) {
       console.log("-------------------------------");
     }
   });
+  socket.on('addCoin', function(recieveData) {
+    if (recieveTXID.indexOf(recieveData.TXID) == -1) {
+      coin.push(recieveData);
+      recieveTXID.push(recieveData.TXID);
+      io.emit('addCoin', recieveData);
+      console.log("-------------------------------");
+      console.log("Add data");
+      console.log(data);
+      console.log("-------------------------------");
+    }
+  });
   socket.on('connected', function(blockChain1) {
     if (blockChain.length == 0) {
       blockChain = blockChain1;
@@ -186,9 +203,14 @@ function mining(previous) {
   isMining = true;
   let datainMining = [];
   let TXinMining = [];
+  let TXinMinig2 = [];
   for (var i in data) {
     datainMining.push(data[i].TXID);
     TXinMining.push(data[i]);
+  }
+  for (var i in coin) {
+    datainMining.push(coin[i].TXID);
+    TXinMining2.push(coin[i]);
   }
   if(datainMining.length == 0){
     datainMining.push("no Data");
@@ -227,6 +249,7 @@ function mining(previous) {
         previousBlockHash: buf[5],
         bits: buf[6],
         data: TXinMining,
+        coin: TXinMinig2,
         MinerName: nodeName
       };
       if (blockChain.length == 0 || block["previousBlockHash"] != blockChain[blockChain.length - 1]["previousBlockHash"]) {
