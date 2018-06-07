@@ -261,7 +261,7 @@ function mining(previous) {
         previousBlockHash: buf[5],
         bits: buf[6],
         data: TXinMining,
-        coin: TXinMinig2,
+        coin: TXinMining2,
         MinerName: nodeName
       };
       if (blockChain.length == 0 || block["previousBlockHash"] != blockChain[blockChain.length - 1]["previousBlockHash"]) {
@@ -272,6 +272,8 @@ function mining(previous) {
         console.log("<------------------------------------------->");
         let temp = block["data"];
         deleteinData(temp);
+        let temp2 = block["coin"];
+        deleteinCoin(temp2);
         io.emit("findBlock", block);
         isMining = false;
       }
