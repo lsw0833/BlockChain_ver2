@@ -180,7 +180,7 @@ function addNode(ip) {
       io.emit('addCoin', recieveData);
       console.log("-------------------------------");
       console.log("Add data");
-      console.log(data);
+      console.log(coin);
       console.log("-------------------------------");
     }
   });
