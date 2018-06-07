@@ -52,6 +52,7 @@ app.post('/wallet',(req,res)=>{
   let sig = req.body.SIG;
   let pub = req.body.PUB;
   let previd =req.body.PREVID;
+  let dataid = req.body.DATAID;
 //  var temp = crypto.publicDecrypt(publicKey, Buffer.from(txSignature));
   // 인증 후
   //if(temp == txid){
@@ -61,7 +62,8 @@ app.post('/wallet',(req,res)=>{
       COINS : coins,
       SIG : sig,
       PUB :pub,
-      PREVID : previd
+      PREVID : previd,
+      DATAID : dataid
     };
     console.log("***************************");
     console.log("Data : " + newData + "for wallet");
