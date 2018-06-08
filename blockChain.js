@@ -12,7 +12,7 @@ var zero = 4;
 var node = [];
 var data = [];
 var coin = [];
-var nodeName = "julia";
+var nodeName = "Genesis";
 var isMining = false;
 var blockChain = [];
 var recieveTXID = [];
@@ -308,7 +308,7 @@ function mining(previous) {
 }
 
 function runMining() {
-  if (blockChain.length != 0 && !isMining) {
+  if (blockChain.length != 0 && !isMining && nodeName!="") {
     mining(blockChain[blockChain.length - 1].blockHash);
   }
 }
