@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 //});
 //app.use(expressErrorHandler.httpError(404));
 //app.use(errorhandler);
-app.post('/dataShop',(req,res)=>{
+app.post('/dataShop', (req, res) => {
   let txID = req.body.TXID;
   let txData = req.body.TXdata;
   var newData = {
@@ -45,40 +45,13 @@ app.post('/dataShop',(req,res)=>{
   io.emit("addData", newData);
   res.send();
 });
-app.post('/wallet',(req,res)=>{
-  let txid = req.body.TXID;
-  let to = req.body.TO;
-  let coins = req.body.COINS;
-  let sig = req.body.SIG;
-  let pub = req.body.PUB;
-  let previd =req.body.PREVID;
-  let dataid = req.body.DATAID;
-//  var temp = crypto.publicDecrypt(publicKey, Buffer.from(txSignature));
-  // 인증 후
-  //if(temp == txid){
-    var newData = {
-      TXID: txid,
-      TO : to,
-      COINS : coins,
-      SIG : sig,
-      PUB :pub,
-      PREVID : previd,
-      DATAID : dataid
-    };
-    console.log("***************************");
-    console.log("Data : " + newData + "for wallet");
-    console.log("***************************");
-    coin.push(newData);
-    console.log(coin);
-    recieveTXID.push(newData["TXID"]);
-    io.emit("addCoin", newData);
-    res.send();
-//  }
 
+app.get('/blockChain', (req, res) => {
+  res.json({
+    blockChain: blockChain
+  });
 });
-app.get('/blockChain',(req,res)=>{
-  res.json({blockChain :blockChain});
-});
+
 function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -93,6 +66,7 @@ function deleteinData(list) {
     }
   }
 }
+
 function deleteinCoin(list) {
   for (var i = 0; i < list.length; i++) {
     for (var j = 0; j < coin.length; j++) {
@@ -143,6 +117,7 @@ function addNode(ip) {
                 let temp2 = data1["coin"];
                 deleteinCoin(temp2);
                 blockChain.push(data1);
+                wal.emit("BlockChain",blockChain);
                 io.emit("findBlock", data1);
                 console.log("get block from other Node");
                 console.log(data1);
@@ -177,6 +152,7 @@ function addNode(ip) {
   });
   socket.on('addCoin', function(recieveData) {
     if (recieveTXID.indexOf(recieveData.TXID) == -1) {
+      //여기서 인증
       coin.push(recieveData);
       recieveTXID.push(recieveData.TXID);
       io.emit('addCoin', recieveData);
@@ -197,6 +173,7 @@ function addNode(ip) {
     if (syncLastBlockHash.indexOf(blockChain1[blockChain1.length - 1]["blockHash"]) == -1) {
       exec("ps -ef | grep MakeBlock | awk '{print $2}' | xargs kill -9", function(err, stdout, stderr) {
         blockChain = blockChain1;
+        wal.emit("BlockChain",blockChain);
         syncLastBlockHash.push(blockChain[blockChain.length - 1]["blockHash"]);
         io.emit('syncBlockChain', blockChain);
         isMining = false;
@@ -226,7 +203,7 @@ function mining(previous) {
     datainMining.push(coin[i].TXID);
     TXinMining2.push(coin[i]);
   }
-  if(datainMining.length == 0){
+  if (datainMining.length == 0) {
     datainMining.push("no Data");
   }
   var options = {
@@ -276,6 +253,7 @@ function mining(previous) {
         deleteinData(temp);
         let temp2 = block["coin"];
         deleteinCoin(temp2);
+        wal.emit("BlockChain",blockChain);
         io.emit("findBlock", block);
         isMining = false;
       }
@@ -298,6 +276,19 @@ io.on('connection', function(socket) {
     node.push(socket.handshake.address.slice(7, socket.handshake.address.length) + ":3000");
     socket.emit("connected", blockChain);
   }
+});
+var wal = require('socket.io')();
+wal.listen(4000);
+wal.on('connection', (socket) => {
+  socket.on('wallet', function(data) {
+    console.log("***************************");
+    console.log("Data : " + data + "for wallet");
+    console.log("***************************");
+    coin.push(data);
+    console.log(coin);
+    recieveTXID.push(data["TXID"]);
+    io.emit("addCoin", data);
+  });
 });
 app.listen(3030, () => console.log('Listening http on port: 3030'));
 initConnect();
