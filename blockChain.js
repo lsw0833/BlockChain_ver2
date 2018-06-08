@@ -117,7 +117,9 @@ function addNode(ip) {
                 let temp2 = data1["coin"];
                 deleteinCoin(temp2);
                 blockChain.push(data1);
-                wal.emit("BlockChain",blockChain);
+                wal.emit("BlockChain", {
+                  blockChain: blockChain
+                });
                 io.emit("findBlock", data1);
                 console.log("get block from other Node");
                 console.log(data1);
@@ -173,7 +175,9 @@ function addNode(ip) {
     if (syncLastBlockHash.indexOf(blockChain1[blockChain1.length - 1]["blockHash"]) == -1) {
       exec("ps -ef | grep MakeBlock | awk '{print $2}' | xargs kill -9", function(err, stdout, stderr) {
         blockChain = blockChain1;
-        wal.emit("BlockChain",blockChain);
+        wal.emit("BlockChain", {
+          blockChain: blockChain
+        });
         syncLastBlockHash.push(blockChain[blockChain.length - 1]["blockHash"]);
         io.emit('syncBlockChain', blockChain);
         isMining = false;
@@ -253,7 +257,9 @@ function mining(previous) {
         deleteinData(temp);
         let temp2 = block["coin"];
         deleteinCoin(temp2);
-        wal.emit("BlockChain",blockChain);
+        wal.emit("BlockChain", {
+          blockChain: blockChain
+        });
         io.emit("findBlock", block);
         isMining = false;
       }
