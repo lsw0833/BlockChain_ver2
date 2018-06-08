@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
 var bs58 = require('bs58');
+var static = require('serve-static');
 var expressErrorHandler = require('express-error-handler');
 var exec = require('child_process').exec;
 var cors = require('cors');
@@ -16,12 +17,16 @@ var isMining = false;
 var blockChain = [];
 var recieveTXID = [];
 var syncLastBlockHash = [];
+var balance = "0";
 var app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(bodyParser.json());
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use('/views', express.static(__dirname + "/views"));
 //var errorhandler = expressErrorHandler({
 //  static:{
 //    '404' : './public/404.html'
@@ -29,6 +34,41 @@ app.use(bodyParser.json());
 //});
 //app.use(expressErrorHandler.httpError(404));
 //app.use(errorhandler);
+app.get('/', (req, res) => {
+  res.render("main.ejs", {
+    pass: 0
+  });
+});
+app.post('/tx', (req, res) => {
+  console.log("!!!");
+  var flag = 1;
+  var address = req.query.address || req.body.address;
+  var coins = req.query.coins || req.body.coins;
+  var dataId = req.query.dataId || req.body.dataId;
+  address = address.trim();
+  coins = coins.trim();
+  dataId = dataId.trim();
+  if (address && coins && dataId) {
+    if (!isNaN(coins)) {
+      if (coins > 0) {
+        flag = 2;
+      }
+    }
+  }
+  if (flag == 2) {
+    wal.emit("Transaction", {
+      ADDRESS: address,
+      COINS: coins,
+      DATAID: dataId
+    });
+  }
+  res.render("main.ejs", {
+    pass: flag
+  });
+});
+app.get('/balance', (req, res) => {
+  res.send({Balance : balance});
+});
 app.post('/dataShop', (req, res) => {
   let txID = req.body.TXID;
   let txData = req.body.TXdata;
@@ -294,6 +334,12 @@ wal.on('connection', (socket) => {
     console.log(coin);
     recieveTXID.push(data["TXID"]);
     io.emit("addCoin", data);
+  });
+  socket.on('balance', (data) => {
+    balance = data["BALANCE"];
+  });
+  socket.on('pubkey', (data)=>{
+    nodeName = data["PUB"];
   });
 });
 app.listen(3030, () => console.log('Listening http on port: 3030'));
