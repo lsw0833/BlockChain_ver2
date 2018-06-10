@@ -69,6 +69,9 @@ app.post('/tx', (req, res) => {
 app.get('/balance', (req, res) => {
   res.send({Balance : balance});
 });
+app.get('/address', (req, res) => {
+  res.send({address : nodeName});
+});
 app.post('/dataShop', (req, res) => {
   let txID = req.body.TXID;
   let txData = req.body.TXdata;
